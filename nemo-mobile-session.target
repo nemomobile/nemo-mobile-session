@@ -1,0 +1,6 @@
+# nemo-mobile.target - a virtual target for the Mobile UI
+#
+#
+
+[Unit]
+Description=Default
