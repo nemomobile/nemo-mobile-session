@@ -1,0 +1,6 @@
+#!/bin/sh
+# This gets run at the end of the boot when all services have been started
+
+# Inform mce, dsme and others that boot is over
+dbus-send --system --type=signal /com/nokia/startup/signal com.nokia.startup.signal.runlevel_switch_done "int32:5"
+dbus-send --system --type=signal /com/nokia/startup/signal com.nokia.startup.signal.init_done "int32:5"

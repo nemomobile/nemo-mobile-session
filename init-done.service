@@ -1,0 +1,14 @@
+# This will call init-done once all services have been started
+ 
+[Unit]
+Description=Indicate boot is done
+After=user-session@1000.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=no
+ExecStart=/usr/lib/startup/init-done
+
+[Install]
+WantedBy=graphical.target
+
