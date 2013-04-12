@@ -1,0 +1,43 @@
+* Mon Mar 04 2013 Pekka Lundstrom <pekka.lundstrom@jollamobile.com> - 13
+- Runlevel4 (actdead) modified to do poweroff. Fixes: NEMO#631
+- Added init-done service and binary (to keep dsme happy and timeouts
+  reasonable).
+
+* Tue Feb 12 2013 Pekka Lundstrom <pekka.lundstrom@jollamobile.com> - 12
+- File nemo-mobile-ui.conf renamed to 50-nemo-mobile-ui.conf
+
+* Fri Feb 08 2013 Pekka Lundstrom <pekka.lundstrom@jollamobile.com> - 11
+- File nemo-mobile-hw taken from  /etc/sysconfig because most HW adaptations
+  put it there
+
+* Wed Jan 30 2013 Pekka Lundstrom <pekka.lundstrom@jollamobile.com> - 10
+- /etc/sysconfig/nemo-mobile-ui file moved to /var/lib/environment/nemo/nemo-mobile-ui.conf
+- project sources moved to git@github.com:nemomobile/nemo-mobile-session.git
+
+* Mon Jan 7 2013 Juho Hamalainen <juho.hamalainen@tieto.com> - 9
+- Add ohm-session-agent and ngfd to user session.
+
+* Thu Nov 8 2012 Marko Saukko <marko.saukko@jollamobile.com> - 8
+- Allow hw adaptations override some environment settings with
+  /etc/sysconfig/nemo-mobile-hw file
+
+* Wed Nov 7 2012 Marko Saukko <marko.saukko@jollamobile.com> - 7
+- Don't require pkgconfig(systemd) but systemd instead.
+
+* Wed Nov 7 2012 Pekka Lundstrom <pekka.lundstrom@jollamobile.com> - 6
+- Put maliit start back to nemo-mobile-session.target under systemd control
+
+* Thu Nov 2 2012 Islam Amer <islam.amer@jollamobile.com> - 5
+- Allow maliit to start using dbus activation instead of explicitly using systemd
+
+* Thu Nov 2 2012 Islam Amer <islam.amer@jollamobile.com> - 4
+- Fix messed up spec file
+
+* Thu Nov 2 2012 Islam Amer <islam.amer@jollamobile.com> - 3
+- Add user session environment variables file, which replaces the profile.d based mechanism
+
+* Thu Nov 1 2012 Islam Amer <islam.amer@jollamobile.com> - 2
+- Obsoletes uxlaunch
+
+* Wed Aug 22 2012 Carsten Munk <carsten@merproject.org> - 1
+- Fork from tizen-mobile-session
