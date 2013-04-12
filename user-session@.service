@@ -23,3 +23,6 @@ Environment=XDG_RUNTIME_DIR=/run/user/%I
 EnvironmentFile=-/var/lib/environment/nemo/*.conf
 # Allow hardware adaptations override the default env
 EnvironmentFile=-/etc/sysconfig/nemo-mobile-hw
+# Some processes make Xorg not to stop properly thus we make
+# sure here that it is stopped when user session is stopping.
+ExecStop=-/usr/bin/killall Xorg
