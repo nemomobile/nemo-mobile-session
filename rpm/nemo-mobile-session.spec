@@ -46,7 +46,7 @@ ln -sf ../pulseaudio.service %{buildroot}%{_libdir}/systemd/user/nemo-mobile-ses
 ln -sf ../contactsd.service %{buildroot}%{_libdir}/systemd/user/nemo-mobile-session.target.wants/
 ln -sf ../tracker-miner-fs.service %{buildroot}%{_libdir}/systemd/user/nemo-mobile-session.target.wants/
 ln -sf ../voicecall-ui-prestart.service %{buildroot}%{_libdir}/systemd/user/nemo-mobile-session.target.wants/
-ln -sf ../meego-pinquery.service %{buildroot}%{_libdir}/systemd/user/nemo-mobile-session.target.wants/
+ln -sf ../qmlpinquery.service %{buildroot}%{_libdir}/systemd/user/nemo-mobile-session.target.wants/
 ln -sf ../maliit-server.service %{buildroot}%{_libdir}/systemd/user/nemo-mobile-session.target.wants/
 ln -sf ../mcompositor.service %{buildroot}%{_libdir}/systemd/user/nemo-mobile-session.target.wants/
 ln -sf ../mthemedaemon.service %{buildroot}%{_libdir}/systemd/user/nemo-mobile-session.target.wants/
