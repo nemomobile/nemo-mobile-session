@@ -41,7 +41,7 @@ ln -sf ../init-done.service %{buildroot}/lib/systemd/system/graphical.target.wan
 ln -sf /lib/systemd/system/poweroff.target %{buildroot}%{_sysconfdir}/systemd/system/runlevel4.target
 
 ln -sf ../lipstick.service %{buildroot}%{_libdir}/systemd/user/nemo-mobile-session.target.wants/
-ln -sf ../meegotouch-applauncherd.service %{buildroot}%{_libdir}/systemd/user/nemo-mobile-session.target.wants/
+ln -sf ../mapplauncherd.target %{buildroot}%{_libdir}/systemd/user/nemo-mobile-session.target.wants/
 ln -sf ../pulseaudio.service %{buildroot}%{_libdir}/systemd/user/nemo-mobile-session.target.wants/
 ln -sf ../contactsd.service %{buildroot}%{_libdir}/systemd/user/nemo-mobile-session.target.wants/
 ln -sf ../tracker-miner-fs.service %{buildroot}%{_libdir}/systemd/user/nemo-mobile-session.target.wants/
