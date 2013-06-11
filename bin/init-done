@@ -1,6 +1,16 @@
 #!/bin/sh
 # This gets run at the end of the boot when all services have been started
 
+[ -z "$1" ] && echo "init-done file missing" && exit 1
+INIT_DONE_FILE=$1
+
+# Mark init-done timing to the file only once per boot
+if [ ! -f $INIT_DONE_FILE ]; then
+    SEC_NOW=$(cat /proc/uptime | cut -d " " -f1)
+    echo "INIT DONE in $SEC_NOW s"
+    echo "$SEC_NOW" > $INIT_DONE_FILE
+fi
+
 # Inform mce, dsme and others that boot is over
 dbus-send --system --type=signal /com/nokia/startup/signal com.nokia.startup.signal.runlevel_switch_done "int32:5"
 dbus-send --system --type=signal /com/nokia/startup/signal com.nokia.startup.signal.init_done "int32:5"

@@ -16,13 +16,15 @@ ControlGroup=%R/user/%I/shared cpu:/
 ControlGroupModify=yes
 TTYPath=/dev/tty1
 Type=notify
-ExecStart=-/lib/systemd/systemd --user
+# Devicelock and pin can hold boot forever. Thus no timeout
+TimeoutSec=0
 Environment=DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/%I/dbus/user_bus_socket
 Environment=DISPLAY=:0
 Environment=XDG_RUNTIME_DIR=/run/user/%I
 EnvironmentFile=-/var/lib/environment/nemo/*.conf
 # Allow hardware adaptations override the default env
 EnvironmentFile=-/etc/sysconfig/nemo-mobile-hw
+ExecStart=/lib/systemd/systemd --user
 # Some processes make Xorg not to stop properly thus we make
 # sure here that it is stopped when user session is stopping.
 ExecStop=-/usr/bin/killall Xorg
