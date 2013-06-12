@@ -1,0 +1,130 @@
+#!/bin/sh
+#
+# Contact: Pekka Lundstrom  <pekka.lundstrom@jollamobile.com>
+#
+# Copyright (c) 2013, Jolla Ltd.
+# All rights reserved.
+# 
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#     * Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#     * Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in the
+#       documentation and/or other materials provided with the distribution.
+#     * Neither the name of the <organization> nor the
+#       names of its contributors may be used to endorse or promote products
+#       derived from this software without specific prior written permission.
+# 
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
+# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+#
+# This starts user session either in ACT_DEAD or USER mode
+# This also keeps eye on need for user session restart
+
+wait_old_session_to_stop() {
+    # Make sure old session is stopped first. max wait in $1
+    local i=0
+    local max_wait=$1
+    while [ $i -lt $max_wait ]; do
+        OLDS=$(systemctl is-active $USER_SERVICE)
+        if [ "$OLDS" == "inactive" -o "$OLDS" == "unknown" ]; then
+            return 0
+        fi
+        echo "($i) waiting old session $OLDS"
+        sleep 1
+        let i=$i+1
+    done
+    echo "Old session did not stop within $max_wait seconds"
+    return 1  
+}
+
+kill_old_session() {
+    echo "Killing old session"
+    systemctl --no-block stop $USER_SERVICE
+    wait_old_session_to_stop 5
+    # Kill all user session stuff
+    killall -u nemo
+    sleep 2
+    # Make sure X was stopped also
+    /usr/lib/startup/killx
+    sleep 2
+    OLDS=$(systemctl is-active $USER_SERVICE)
+    if [ "$OLDS" == "inactive" -o "$OLDS" == "unknown" ]; then
+        echo "Old session killed"
+        return 0
+    else 
+        echo "Failed to kill old session"
+        sleep 2
+        return 1
+    fi
+}
+
+wait_user_service_to_start() {
+    # This waits untill user-session has started
+    # We also check need for restart
+
+    local ST=""
+    while [ 1 ]; do
+        if [ -f $RESTART_FILE ]; then
+            # User session needs to be restarted
+            echo "Going to restart user session $DEF_UID"
+            rm -f $RESTART_FILE
+            kill_old_session
+            systemctl start --no-block $USER_SERVICE
+            sleep 1
+        fi
+        ST=$(systemctl is-active $USER_SERVICE)
+        if [ "$ST" == "active" ]; then
+            return 0
+        fi
+        if [ "$ST" == "activating" ]; then
+            sleep 1
+        else
+            echo " User session failed to start, status = $ST"
+            return 1
+        fi
+    done
+}
+
+
+# ------------------ main() -----------------------
+
+[ -z "$1" ] && echo "Boot mode missing" && exit 1
+MODE=$1
+# First find out the user id we use
+DEF_UID=$(grep "^UID_MIN" /etc/login.defs |  tr -s " " | cut -d " " -f2)
+USER_SERVICE=user-session\@${DEF_UID}.service
+
+wait_old_session_to_stop 10
+if [ $? -ne 0 ]; then
+    echo "Problem, must kill old session"
+    kill_old_session
+fi
+
+# Save the mode we are going to run
+echo "BOOTSTATE=$MODE" > /run/systemd/boot-status/bootstate
+rm -f /run/systemd/boot-status/USER
+rm -f /run/systemd/boot-status/ACT_DEAD
+touch /run/systemd/boot-status/$MODE
+
+echo "Starting new session in $MODE mode"
+systemctl start --no-block $USER_SERVICE
+wait_user_service_to_start
+st=$?
+if [ $st -eq 0 ]; then
+    echo "New session $MODE started"
+else
+    echo "Starting new session in $MODE failed"
+fi
+exit $st
+

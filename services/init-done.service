@@ -2,12 +2,12 @@
  
 [Unit]
 Description=Indicate boot is done
-After=user-session@1000.service
+After=start-user-session@USER.service
 
 [Service]
 Type=oneshot
 RemainAfterExit=no
-ExecStart=/usr/lib/startup/init-done
+ExecStart=/usr/lib/startup/init-done /run/systemd/boot-status/init-done
 
 [Install]
 WantedBy=graphical.target
