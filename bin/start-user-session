@@ -53,7 +53,7 @@ kill_old_session() {
     systemctl --no-block stop $USER_SERVICE
     wait_old_session_to_stop 5
     # Kill all user session stuff
-    killall -u nemo
+    killall -u $DEF_UNAME
     sleep 2
     # Make sure X was stopped also
     /usr/lib/startup/killx
@@ -103,6 +103,7 @@ wait_user_service_to_start() {
 MODE=$1
 # First find out the user id we use
 DEF_UID=$(grep "^UID_MIN" /etc/login.defs |  tr -s " " | cut -d " " -f2)
+DEF_UNAME=$(getent passwd $DEF_UID | cut -d ":" -f1)
 USER_SERVICE=user-session\@${DEF_UID}.service
 
 wait_old_session_to_stop 10
