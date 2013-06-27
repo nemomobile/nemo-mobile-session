@@ -7,6 +7,8 @@ License:    Public Domain
 URL:        https://github.com/nemomobile/nemo-mobile-session
 Source0:    %{name}-%{version}.tar.gz
 Requires:   systemd >= 187
+Requires: systemd-user-session-targets
+BuildRequires: systemd-user-session-targets
 Requires:   xorg-launch-helper
 Obsoletes:  uxlaunch
 # mer release 0.20130605.1 changed login.defs
@@ -27,6 +29,7 @@ Target for nemo systemd user session
 
 mkdir -p %{buildroot}%{_libdir}/systemd/user/nemo-middleware.target.wants/
 mkdir -p %{buildroot}%{_libdir}/systemd/user/nemo-mobile-session.target.wants/
+mkdir -p %{buildroot}%{_libdir}/systemd/user/xorg.target.wants/
 mkdir -p %{buildroot}/lib/systemd/system/graphical.target.wants/
 mkdir -p %{buildroot}%{_sysconfdir}/sysconfig/
 mkdir -p %{buildroot}/var/lib/environment/nemo
@@ -69,6 +72,10 @@ ln -sf ../mcompositor.service %{buildroot}%{_libdir}/systemd/user/nemo-mobile-se
 ln -sf ../mthemedaemon.service %{buildroot}%{_libdir}/systemd/user/nemo-mobile-session.target.wants/
 ln -sf ../ngfd.service %{buildroot}%{_libdir}/systemd/user/nemo-mobile-session.target.wants/
 ln -sf ../ohm-session-agent.service %{buildroot}%{_libdir}/systemd/user/nemo-mobile-session.target.wants/
+# temp transition phase towards new targets
+ln -sf ../pre-user-session.target %{buildroot}%{_libdir}/systemd/user/xorg.target.wants/
+ln -sf ../user-session.target %{buildroot}%{_libdir}/systemd/user/nemo-mobile-session.target.wants/
+ln -sf ../post-user-session.target %{buildroot}%{_libdir}/systemd/user/nemo-mobile-session.target.wants/
 
 # login.defs
 mkdir -p %{buildroot}/%{_oneshotdir}
@@ -105,6 +112,7 @@ fi
 %{_libdir}/systemd/user/nemo-middleware.target/
 %{_libdir}/systemd/user/nemo-middleware.target.wants/
 %{_libdir}/systemd/user/default.target
+%{_libdir}/systemd/user/xorg.target.wants/pre-user-session.target
 /lib/systemd/system/graphical.target.wants/start-user-session@USER.service
 /lib/systemd/system/graphical.target.wants/init-done.service
 /lib/systemd/system/user-session@.service
