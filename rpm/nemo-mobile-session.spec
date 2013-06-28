@@ -8,7 +8,6 @@ URL:        https://github.com/nemomobile/nemo-mobile-session
 Source0:    %{name}-%{version}.tar.gz
 Requires:   systemd >= 187
 Requires: systemd-user-session-targets
-BuildRequires: systemd-user-session-targets
 Requires:   xorg-launch-helper
 Obsoletes:  uxlaunch
 # mer release 0.20130605.1 changed login.defs
