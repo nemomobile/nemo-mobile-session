@@ -7,7 +7,7 @@ License:    Public Domain
 URL:        https://github.com/nemomobile/nemo-mobile-session
 Source0:    %{name}-%{version}.tar.gz
 Requires:   systemd >= 187
-Requires: systemd-user-session-targets
+Requires:   systemd-user-session-targets
 Requires:   xorg-launch-helper
 Obsoletes:  uxlaunch
 # mer release 0.20130605.1 changed login.defs
@@ -26,17 +26,11 @@ Target for nemo systemd user session
 
 %install
 
-mkdir -p %{buildroot}%{_libdir}/systemd/user/nemo-middleware.target.wants/
-mkdir -p %{buildroot}%{_libdir}/systemd/user/nemo-mobile-session.target.wants/
-mkdir -p %{buildroot}%{_libdir}/systemd/user/xorg.target.wants/
 mkdir -p %{buildroot}/lib/systemd/system/graphical.target.wants/
 mkdir -p %{buildroot}%{_sysconfdir}/sysconfig/
 mkdir -p %{buildroot}/var/lib/environment/nemo
 mkdir -p %{buildroot}%{_sysconfdir}/systemd/system/
-
-# User services
-install -m 0644 services/nemo-mobile-session.target %{buildroot}%{_libdir}/systemd/user/
-install -m 0644 services/nemo-middleware.target %{buildroot}%{_libdir}/systemd/user/
+mkdir -p %{buildroot}%{_libdir}/systemd/user/pre-user-session.target.wants/
 
 # Root services
 install -m 0644 services/user-session@.service %{buildroot}/lib/systemd/system/
@@ -58,23 +52,8 @@ ln -sf ../init-done.service %{buildroot}/lib/systemd/system/graphical.target.wan
 ln -sf /lib/systemd/system/poweroff.target %{buildroot}%{_sysconfdir}/systemd/system/runlevel4.target
 
 # nemo-mobile-session dependencies
-ln -sf nemo-mobile-session.target %{buildroot}%{_libdir}/systemd/user/default.target
-ln -sf ../lipstick.service %{buildroot}%{_libdir}/systemd/user/nemo-mobile-session.target.wants/
-ln -sf ../mapplauncherd.target %{buildroot}%{_libdir}/systemd/user/nemo-mobile-session.target.wants/
-ln -sf ../pulseaudio.service %{buildroot}%{_libdir}/systemd/user/nemo-mobile-session.target.wants/
-ln -sf ../contactsd.service %{buildroot}%{_libdir}/systemd/user/nemo-mobile-session.target.wants/
-ln -sf ../tracker-miner-fs.service %{buildroot}%{_libdir}/systemd/user/nemo-mobile-session.target.wants/
-ln -sf ../voicecall-ui-prestart.service %{buildroot}%{_libdir}/systemd/user/nemo-mobile-session.target.wants/
-ln -sf ../qmlpinquery.service %{buildroot}%{_libdir}/systemd/user/nemo-mobile-session.target.wants/
-ln -sf ../maliit-server.service %{buildroot}%{_libdir}/systemd/user/nemo-mobile-session.target.wants/
-ln -sf ../mcompositor.service %{buildroot}%{_libdir}/systemd/user/nemo-mobile-session.target.wants/
-ln -sf ../mthemedaemon.service %{buildroot}%{_libdir}/systemd/user/nemo-mobile-session.target.wants/
-ln -sf ../ngfd.service %{buildroot}%{_libdir}/systemd/user/nemo-mobile-session.target.wants/
-ln -sf ../ohm-session-agent.service %{buildroot}%{_libdir}/systemd/user/nemo-mobile-session.target.wants/
-# temp transition phase towards new targets
-ln -sf ../pre-user-session.target %{buildroot}%{_libdir}/systemd/user/xorg.target.wants/
-ln -sf ../user-session.target %{buildroot}%{_libdir}/systemd/user/nemo-mobile-session.target.wants/
-ln -sf ../post-user-session.target %{buildroot}%{_libdir}/systemd/user/nemo-mobile-session.target.wants/
+ln -sf post-user-session.target %{buildroot}%{_libdir}/systemd/user/default.target
+ln -sf ../xorg.target %{buildroot}%{_libdir}/systemd/user/pre-user-session.target.wants/
 
 # login.defs
 mkdir -p %{buildroot}/%{_oneshotdir}
@@ -106,12 +85,8 @@ fi
 %defattr(-,root,root,-)
 %config /var/lib/environment/nemo/50-nemo-mobile-ui.conf
 %{_libdir}/tmpfiles.d/nemo-session-tmp.conf
-%{_libdir}/systemd/user/nemo-mobile-session.target
-%{_libdir}/systemd/user/nemo-mobile-session.target.wants/
-%{_libdir}/systemd/user/nemo-middleware.target/
-%{_libdir}/systemd/user/nemo-middleware.target.wants/
 %{_libdir}/systemd/user/default.target
-%{_libdir}/systemd/user/xorg.target.wants/pre-user-session.target
+%{_libdir}/systemd/user/pre-user-session.target.wants/xorg.target
 /lib/systemd/system/graphical.target.wants/start-user-session@USER.service
 /lib/systemd/system/graphical.target.wants/init-done.service
 /lib/systemd/system/user-session@.service
