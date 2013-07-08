@@ -30,6 +30,7 @@ mkdir -p %{buildroot}/lib/systemd/system/graphical.target.wants/
 mkdir -p %{buildroot}%{_sysconfdir}/sysconfig/
 mkdir -p %{buildroot}/var/lib/environment/nemo
 mkdir -p %{buildroot}%{_sysconfdir}/systemd/system/
+mkdir -p %{buildroot}%{_libdir}/systemd/user/pre-user-session.target.wants/
 
 # Root services
 install -m 0644 services/user-session@.service %{buildroot}/lib/systemd/system/
