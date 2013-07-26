@@ -6,6 +6,13 @@ Group:      System/Libraries
 License:    Public Domain
 URL:        https://github.com/nemomobile/nemo-mobile-session
 Source0:    %{name}-%{version}.tar.gz
+
+%description
+Target for nemo systemd user session
+
+%package common 
+Summary:    Nemo-mobile-session configs files shared by both xorg and wayland
+Group:      Configs
 Requires:   systemd >= 187
 Requires:   systemd-user-session-targets
 Obsoletes:  uxlaunch
@@ -16,26 +23,25 @@ Requires: oneshot
 %{_oneshot_requires_post}
 Requires(post): /bin/chgrp, /usr/sbin/groupmod
 
-%description
-Target for nemo systemd user session
-
-
+%description common
+%{summary}
+ 
 %package xorg
 Summary:    Xorg configs for nemo-mobile-session
-Group:      Configs
-Provides:   nemo-mobile-session-xorg    
+Group:      Configs    
 Requires:   xorg-launch-helper
-Requires:   nemo-mobile-session
-Conflicts:  nemo-mobile-session-wayland
+Requires:   nemo-mobile-session-common
+Provides:   nemo-mobile-session > 21
 Obsoletes:  nemo-mobile-session <= 21
+Conflicts:  nemo-mobile-session-wayland
+
 %description xorg   
 %{summary}
 
 %package wayland
 Summary:    Wayland configs for nemo-mobile-session
 Group:      Configs
-Provides:   nemo-mobile-session-wayland
-Requires:   nemo-mobile-session
+Requires:   nemo-mobile-session-common
 Conflicts:  nemo-mobile-session-xorg
 
 %description wayland
@@ -103,7 +109,7 @@ if [ $1 -gt 1 ] ; then
 
 fi
 
-%files
+%files common
 %defattr(-,root,root,-)
 %config /var/lib/environment/nemo/50-nemo-mobile-ui.conf
 %{_libdir}/tmpfiles.d/nemo-session-tmp.conf
