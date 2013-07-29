@@ -6,9 +6,15 @@ Group:      System/Libraries
 License:    Public Domain
 URL:        https://github.com/nemomobile/nemo-mobile-session
 Source0:    %{name}-%{version}.tar.gz
+
+%description
+Target for nemo systemd user session
+
+%package common 
+Summary:    Nemo-mobile-session configs files shared by both xorg and wayland
+Group:      Configs
 Requires:   systemd >= 187
 Requires:   systemd-user-session-targets
-Requires:   xorg-launch-helper
 Obsoletes:  uxlaunch
 # mer release 0.20130605.1 changed login.defs
 Requires: setup >= 2.8.56-1.1.33
@@ -17,9 +23,29 @@ Requires: oneshot
 %{_oneshot_requires_post}
 Requires(post): /bin/chgrp, /usr/sbin/groupmod
 
-%description
-Target for nemo systemd user session
+%description common
+%{summary}
+ 
+%package xorg
+Summary:    Xorg configs for nemo-mobile-session
+Group:      Configs    
+Requires:   xorg-launch-helper
+Requires:   nemo-mobile-session-common
+Provides:   nemo-mobile-session > 21
+Obsoletes:  nemo-mobile-session <= 21
+Conflicts:  nemo-mobile-session-wayland
 
+%description xorg   
+%{summary}
+
+%package wayland
+Summary:    Wayland configs for nemo-mobile-session
+Group:      Configs
+Requires:   nemo-mobile-session-common
+Conflicts:  nemo-mobile-session-xorg
+
+%description wayland
+%{summary}
 
 %prep
 %setup -q -n %{name}-%{version}
@@ -40,6 +66,7 @@ install -m 0644 services/init-done.service %{buildroot}/lib/systemd/system/
 # conf
 install -m 0644 conf/50-nemo-mobile-ui.conf %{buildroot}/var/lib/environment/nemo/
 install -D -m 0644 conf/nemo-session-tmp.conf %{buildroot}%{_libdir}/tmpfiles.d/nemo-session-tmp.conf
+install -m 0644 conf/50-nemo-mobile-wayland.conf %{buildroot}/var/lib/environment/nemo/
 
 # bin
 install -D -m 0744 bin/start-user-session %{buildroot}%{_libdir}/startup/start-user-session
@@ -58,6 +85,7 @@ ln -sf ../xorg.target %{buildroot}%{_libdir}/systemd/user/pre-user-session.targe
 # login.defs
 mkdir -p %{buildroot}/%{_oneshotdir}
 install -D -m 755 oneshot/correct-users %{buildroot}/%{_oneshotdir}
+
 
 %post
 if [ $1 -gt 1 ] ; then
@@ -81,12 +109,11 @@ if [ $1 -gt 1 ] ; then
 
 fi
 
-%files
+%files common
 %defattr(-,root,root,-)
 %config /var/lib/environment/nemo/50-nemo-mobile-ui.conf
 %{_libdir}/tmpfiles.d/nemo-session-tmp.conf
 %{_libdir}/systemd/user/default.target
-%{_libdir}/systemd/user/pre-user-session.target.wants/xorg.target
 /lib/systemd/system/graphical.target.wants/start-user-session@USER.service
 /lib/systemd/system/graphical.target.wants/init-done.service
 /lib/systemd/system/user-session@.service
@@ -97,4 +124,13 @@ fi
 %{_libdir}/startup/killx
 %{_sysconfdir}/systemd/system/runlevel4.target 
 %{_oneshotdir}/correct-users
+
+%files xorg
+%defattr(-,root,root,-)
+%{_libdir}/systemd/user/pre-user-session.target.wants/xorg.target
+
+%files wayland
+%defattr(-,root,root,-)
+%config /var/lib/environment/nemo/50-nemo-mobile-wayland.conf
+
 
