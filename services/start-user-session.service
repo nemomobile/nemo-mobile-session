@@ -1,0 +1,23 @@
+# Copyright (C) 2013 Jolla Oy
+# Contact: Pekka Lundstrom  <pekka.lundstrom@jollamobile.com>
+#
+# Hedayat Vatankhah <hedayat.fwd@gmail.com>, 2014.
+#
+# Starts user session
+
+[Unit]
+Description=Default User Session
+After=systemd-user-sessions.service
+
+[Service]
+User=nemo
+PAMName=login
+Type=simple
+#Type=oneshot
+Environment=RESTART_FILE=/home/nemo/.restart-user
+ExecStart=/usr/lib/startup/start-user-session
+Restart=always
+RestartSec=1
+StartLimitInterval=120
+StartLimitBurst=3
+StartLimitAction=reboot

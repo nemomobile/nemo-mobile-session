@@ -1,0 +1,15 @@
+# Copyright (C) 2013 Jolla Oy
+# Contact: Pekka Lundstrom  <pekka.lundstrom@jollamobile.com>
+#
+# Hedayat Vatankhah <hedayat.fwd@gmail.com>, 2014.
+#
+# Sets the boot state to USER or ACT_DEAD
+# Mode is selected with %I
+
+[Unit]
+Description=Set Boot state to %I
+Before=start-user-session.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/lib/startup/set-boot-state %I

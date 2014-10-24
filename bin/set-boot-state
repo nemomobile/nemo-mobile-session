@@ -4,8 +4,6 @@
 #
 # Copyright (c) 2013, Jolla Ltd.
 # All rights reserved.
-#
-# Hedayat Vatankhah <hedayat.fwd@gmail.com>, 2014.
 # 
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -29,54 +27,27 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#
-# This starts user session either in ACT_DEAD or USER mode
-# This also keeps eye on need for user session restart
+# Hedayat Vatankhah <hedayat.fwd@gmail.com>, 2014.
+# Only set boot state!
 
-wait_user_service_to_start() {
-    # This waits untill user-session has started
-    # We also check need for restart
-
-    local ST=""
-    while [ 1 ]; do
-        if [ -f $RESTART_FILE ]; then
-            # User session needs to be restarted
-            echo "Going to restart user session $DEF_UID"
-            rm -f $RESTART_FILE
-            return 1
-        fi
-        ST=$(systemctl is-active $USER_SERVICE)
-        if [ "$ST" == "active" ]; then
-            return 0
-        fi
-        if [ "$ST" == "activating" ]; then
-            sleep 1
-        else
-            echo " User session failed to start, status = $ST"
-            return 1
-        fi
-    done
-}
-
+[ -z "$1" ] && echo "Boot mode missing" && exit 1
+MODE=$1
 
 # First find out the user id we use
 DEF_UID=$(grep "^UID_MIN" /etc/login.defs |  tr -s " " | cut -d " " -f2)
-DEF_UNAME=$(getent passwd $DEF_UID | cut -d ":" -f1)
-USER_SERVICE=user\@${DEF_UID}.service
 
-echo "Starting new session"
-wait_user_service_to_start
-st=$?
-if [ $st -eq 0 ]; then
-    echo "New session started"
-    # We are the session manager, if we exit, the session is terminated!
-    while true; do
-        sleep 100000
-    done
+echo "Configuring boot state to $MODE"
+
+# Save the mode we are going to run
+echo "BOOTSTATE=$MODE" > /run/systemd/boot-status/bootstate
+rm -f /run/systemd/boot-status/USER
+rm -f /run/systemd/boot-status/ACT_DEAD
+touch /run/systemd/boot-status/$MODE
+
+if [[ $MODE == USER ]]; then
+    ln -sf /usr/lib/systemd/user/post-user-session.target \
+        /etc/systemd/user/${DEF_UID}.target
 else
-    echo "Starting new session in failed"
+    ln -sf /usr/lib/systemd/user/actdead-session.target \
+        /etc/systemd/user/${DEF_UID}.target
 fi
-
-# Will be restarted by systemd. To shutdown, user service must be stopped using systemctl
-exit $st
-

@@ -61,7 +61,8 @@ mkdir -p %{buildroot}%{_libdir}/systemd/user/pre-user-session.target.wants/
 # Root services
 install -D -m 0644 services/user@.service.d/nemo.conf \
            %{buildroot}/lib/systemd/system/user@.service.d/nemo.conf
-install -m 0644 services/start-user-session@.service %{buildroot}/lib/systemd/system/
+install -m 0644 services/set-boot-state@.service %{buildroot}/lib/systemd/system/
+install -m 0644 services/start-user-session.service %{buildroot}/lib/systemd/system/
 install -m 0644 services/init-done.service %{buildroot}/lib/systemd/system/
 
 # conf
@@ -74,7 +75,8 @@ install -D -m 0744 bin/start-user-session %{buildroot}%{_libdir}/startup/start-u
 install -D -m 0744 bin/init-done %{buildroot}/%{_libdir}/startup/init-done
 install -D -m 0744 bin/killx %{buildroot}/%{_libdir}/startup/killx
 
-ln -sf ../start-user-session@.service %{buildroot}/lib/systemd/system/graphical.target.wants/start-user-session@USER.service
+ln -sf ../set-boot-state@.service %{buildroot}/lib/systemd/system/graphical.target.wants/set-boot-state@USER.service
+ln -sf ../start-user-session.service %{buildroot}/lib/systemd/system/graphical.target.wants/start-user-session.service
 ln -sf ../init-done.service %{buildroot}/lib/systemd/system/graphical.target.wants/
 # In nemo actdead is not (yet) supported. We define actdead (runlevel4) to poweroff
 ln -sf /lib/systemd/system/poweroff.target %{buildroot}%{_sysconfdir}/systemd/system/runlevel4.target
@@ -118,7 +120,8 @@ fi
 /lib/systemd/system/graphical.target.wants/start-user-session@USER.service
 /lib/systemd/system/graphical.target.wants/init-done.service
 /lib/systemd/system/user@.service.d/*
-/lib/systemd/system/start-user-session@.service
+/lib/systemd/system/set-boot-state@.service
+/lib/systemd/system/start-user-session.service
 /lib/systemd/system/init-done.service
 %{_libdir}/startup/start-user-session
 %{_libdir}/startup/init-done
