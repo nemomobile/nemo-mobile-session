@@ -59,7 +59,8 @@ mkdir -p %{buildroot}%{_sysconfdir}/systemd/system/
 mkdir -p %{buildroot}%{_libdir}/systemd/user/pre-user-session.target.wants/
 
 # Root services
-install -m 0644 services/user-session@.service %{buildroot}/lib/systemd/system/
+install -D -m 0644 services/user@.service.d/nemo.conf \
+           %{buildroot}/lib/systemd/system/user@.service.d/nemo.conf
 install -m 0644 services/start-user-session@.service %{buildroot}/lib/systemd/system/
 install -m 0644 services/init-done.service %{buildroot}/lib/systemd/system/
 
@@ -116,18 +117,18 @@ fi
 %{_libdir}/systemd/user/default.target
 /lib/systemd/system/graphical.target.wants/start-user-session@USER.service
 /lib/systemd/system/graphical.target.wants/init-done.service
-/lib/systemd/system/user-session@.service
+/lib/systemd/system/user@.service.d/*
 /lib/systemd/system/start-user-session@.service
 /lib/systemd/system/init-done.service
 %{_libdir}/startup/start-user-session
 %{_libdir}/startup/init-done
-%{_libdir}/startup/killx
 %{_sysconfdir}/systemd/system/runlevel4.target 
 %{_oneshotdir}/correct-users
 
 %files xorg
 %defattr(-,root,root,-)
 %{_libdir}/systemd/user/pre-user-session.target.wants/xorg.target
+%{_libdir}/startup/killx
 
 %files wayland
 %defattr(-,root,root,-)

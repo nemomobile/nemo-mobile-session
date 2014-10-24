@@ -56,7 +56,7 @@ kill_old_session() {
     killall -u $DEF_UNAME
     sleep 2
     # Make sure X was stopped also
-    /usr/lib/startup/killx
+    [ -x /usr/lib/startup/killx ] && /usr/lib/startup/killx
     sleep 2
     OLDS=$(systemctl is-active $USER_SERVICE)
     if [ "$OLDS" == "inactive" -o "$OLDS" == "unknown" ]; then
