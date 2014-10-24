@@ -13,7 +13,8 @@ After=systemd-user-sessions.service
 User=nemo
 PAMName=login
 Type=simple
-#Type=oneshot
+TimeoutStartSec=0
+TimeoutStopSec=2
 Environment=RESTART_FILE=/home/nemo/.restart-user
 ExecStart=/usr/lib/startup/start-user-session
 Restart=always

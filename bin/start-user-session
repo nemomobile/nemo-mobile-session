@@ -37,6 +37,7 @@ wait_user_service_to_start() {
     # This waits untill user-session has started
     # We also check need for restart
 
+    sleep 2 # Wait a little to make sure that user@.service is started
     local ST=""
     while [ 1 ]; do
         if [ -f $RESTART_FILE ]; then
@@ -70,9 +71,11 @@ st=$?
 if [ $st -eq 0 ]; then
     echo "New session started"
     # We are the session manager, if we exit, the session is terminated!
-    while true; do
-        sleep 100000
+    while sleep 100000d; do
+        true
     done
+    # loop will be terminated if 'sleep' exits abnormaly, e.g. service stopped
+    echo "User session terminated"
 else
     echo "Starting new session in failed"
 fi
