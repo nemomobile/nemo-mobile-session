@@ -71,7 +71,8 @@ install -D -m 0644 conf/nemo-session-tmp.conf %{buildroot}%{_libdir}/tmpfiles.d/
 install -m 0644 conf/50-nemo-mobile-wayland.conf %{buildroot}/var/lib/environment/nemo/
 
 # bin
-install -D -m 0744 bin/start-user-session %{buildroot}%{_libdir}/startup/start-user-session
+install -D -m 0744 bin/set-boot-state %{buildroot}%{_libdir}/startup/set-boot-state
+install -D -m 0755 bin/start-user-session %{buildroot}%{_libdir}/startup/start-user-session
 install -D -m 0744 bin/init-done %{buildroot}/%{_libdir}/startup/init-done
 install -D -m 0744 bin/killx %{buildroot}/%{_libdir}/startup/killx
 
@@ -82,7 +83,7 @@ ln -sf ../init-done.service %{buildroot}/lib/systemd/system/graphical.target.wan
 ln -sf /lib/systemd/system/poweroff.target %{buildroot}%{_sysconfdir}/systemd/system/runlevel4.target
 
 # nemo-mobile-session dependencies
-ln -sf post-user-session.target %{buildroot}%{_libdir}/systemd/user/default.target
+#ln -sf post-user-session.target %{buildroot}%{_libdir}/systemd/user/default.target
 ln -sf ../xorg.target %{buildroot}%{_libdir}/systemd/user/pre-user-session.target.wants/
 
 # login.defs
@@ -116,14 +117,15 @@ fi
 %defattr(-,root,root,-)
 %config /var/lib/environment/nemo/50-nemo-mobile-ui.conf
 %{_libdir}/tmpfiles.d/nemo-session-tmp.conf
-%{_libdir}/systemd/user/default.target
-/lib/systemd/system/graphical.target.wants/start-user-session@USER.service
+/lib/systemd/system/graphical.target.wants/set-boot-state@USER.service
+/lib/systemd/system/graphical.target.wants/start-user-session.service
 /lib/systemd/system/graphical.target.wants/init-done.service
 /lib/systemd/system/user@.service.d/*
 /lib/systemd/system/set-boot-state@.service
 /lib/systemd/system/start-user-session.service
 /lib/systemd/system/init-done.service
 %{_libdir}/startup/start-user-session
+%{_libdir}/startup/set-boot-state
 %{_libdir}/startup/init-done
 %{_sysconfdir}/systemd/system/runlevel4.target 
 %{_oneshotdir}/correct-users
