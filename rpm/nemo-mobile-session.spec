@@ -83,6 +83,10 @@ ln -sf ../init-done.service %{buildroot}/lib/systemd/system/graphical.target.wan
 ln -sf /lib/systemd/system/poweroff.target %{buildroot}%{_sysconfdir}/systemd/system/runlevel4.target
 
 # nemo-mobile-session dependencies
+
+# systemd --user is called with '--unit=%I.target' in nemo.conf,
+# so default.target is never used. User target is setup at runtime
+# by set-boot-state according to the current boot state
 #ln -sf post-user-session.target %{buildroot}%{_libdir}/systemd/user/default.target
 ln -sf ../xorg.target %{buildroot}%{_libdir}/systemd/user/pre-user-session.target.wants/
 
