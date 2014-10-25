@@ -1,5 +1,13 @@
 #!/bin/sh
 #
+# Copyright (c) 2014, Hedayat Vatankhah <hedayat.fwd@gmail.com>.
+#
+#   Sets the current boot state in /run/systemd/boot-status (this part
+# comes from old start-user-session with the following copyright notice),
+# and sets default user's target according to the boot state.
+#
+
+#
 # Contact: Pekka Lundstrom  <pekka.lundstrom@jollamobile.com>
 #
 # Copyright (c) 2013, Jolla Ltd.
@@ -26,9 +34,6 @@
 # ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-# Hedayat Vatankhah <hedayat.fwd@gmail.com>, 2014.
-# Only set boot state!
 
 [ -z "$1" ] && echo "Boot mode missing" && exit 1
 MODE=$1

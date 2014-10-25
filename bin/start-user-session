@@ -3,9 +3,14 @@
 # Contact: Pekka Lundstrom  <pekka.lundstrom@jollamobile.com>
 #
 # Copyright (c) 2013, Jolla Ltd.
+# Copyright (c) 2014, Hedayat Vatankhah <hedayat.fwd@gmail.com>
 # All rights reserved.
 #
-# Hedayat Vatankhah <hedayat.fwd@gmail.com>, 2014.
+# Updates:
+#    Hedayat Vatankhah <hedayat.fwd@gmail.com>:
+#      * Modified to be compatible with new systemd. It is now run as default
+#        user rather than root, and is used as the users's session manager.
+#        Session restarts are now managed by systemd itself.
 # 
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
