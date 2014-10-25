@@ -26,18 +26,6 @@ Requires(post): /bin/chgrp, /usr/sbin/groupmod
 %description common
 %{summary}
  
-%package xorg
-Summary:    Xorg configs for nemo-mobile-session
-Group:      Configs    
-Requires:   xorg-launch-helper
-Requires:   nemo-mobile-session-common
-Provides:   nemo-mobile-session > 21
-Obsoletes:  nemo-mobile-session <= 21
-Conflicts:  nemo-mobile-session-wayland
-
-%description xorg   
-%{summary}
-
 %package wayland
 Summary:    Wayland configs for nemo-mobile-session
 Group:      Configs
@@ -74,7 +62,6 @@ install -m 0644 conf/50-nemo-mobile-wayland.conf %{buildroot}/var/lib/environmen
 install -D -m 0744 bin/set-boot-state %{buildroot}%{_libdir}/startup/set-boot-state
 install -D -m 0755 bin/start-user-session %{buildroot}%{_libdir}/startup/start-user-session
 install -D -m 0744 bin/init-done %{buildroot}/%{_libdir}/startup/init-done
-install -D -m 0744 bin/killx %{buildroot}/%{_libdir}/startup/killx
 
 ln -sf ../set-boot-state@.service %{buildroot}/lib/systemd/system/graphical.target.wants/set-boot-state@USER.service
 ln -sf ../start-user-session.service %{buildroot}/lib/systemd/system/graphical.target.wants/start-user-session.service
@@ -88,7 +75,6 @@ ln -sf /lib/systemd/system/poweroff.target %{buildroot}%{_sysconfdir}/systemd/sy
 # so default.target is never used. User target is setup at runtime
 # by set-boot-state according to the current boot state
 #ln -sf post-user-session.target %{buildroot}%{_libdir}/systemd/user/default.target
-ln -sf ../xorg.target %{buildroot}%{_libdir}/systemd/user/pre-user-session.target.wants/
 
 # login.defs
 mkdir -p %{buildroot}/%{_oneshotdir}
@@ -133,11 +119,6 @@ fi
 %{_libdir}/startup/init-done
 %{_sysconfdir}/systemd/system/runlevel4.target 
 %{_oneshotdir}/correct-users
-
-%files xorg
-%defattr(-,root,root,-)
-%{_libdir}/systemd/user/pre-user-session.target.wants/xorg.target
-%{_libdir}/startup/killx
 
 %files wayland
 %defattr(-,root,root,-)
