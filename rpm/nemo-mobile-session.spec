@@ -18,9 +18,6 @@ Requires:   systemd-user-session-targets
 Obsoletes:  uxlaunch
 # mer release 0.20130605.1 changed login.defs
 Requires: setup >= 2.8.56-1.1.33
-BuildRequires: oneshot
-Requires: oneshot
-%{_oneshot_requires_post}
 Requires(post): /bin/chgrp, /usr/sbin/groupmod
 
 %description common
@@ -76,11 +73,6 @@ ln -sf /lib/systemd/system/poweroff.target %{buildroot}%{_sysconfdir}/systemd/sy
 # by set-boot-state according to the current boot state
 #ln -sf post-user-session.target %{buildroot}%{_libdir}/systemd/user/default.target
 
-# login.defs
-mkdir -p %{buildroot}/%{_oneshotdir}
-install -D -m 755 oneshot/correct-users %{buildroot}/%{_oneshotdir}
-
-
 %post
 if [ $1 -gt 1 ] ; then
   # known changes
@@ -97,9 +89,6 @@ if [ $1 -gt 1 ] ; then
   mkdir -p %{_sharedstatedir}/misc
   [ ! -f %{_sharedstatedir}/misc/passwd.old ] && cp %{_sysconfdir}/passwd %{_sharedstatedir}/misc/passwd.old
   [ ! -f %{_sharedstatedir}/misc/group.old ] && cp %{_sysconfdir}/group %{_sharedstatedir}/misc/group.old
-
-  # device specific changes
-  %{_bindir}/add-oneshot correct-users
 
 fi
 
@@ -118,7 +107,6 @@ fi
 %{_libdir}/startup/set-boot-state
 %{_libdir}/startup/init-done
 %{_sysconfdir}/systemd/system/runlevel4.target 
-%{_oneshotdir}/correct-users
 
 %files wayland
 %defattr(-,root,root,-)
