@@ -6,6 +6,7 @@ Group:      System/Libraries
 License:    Public Domain
 URL:        https://github.com/nemomobile/nemo-mobile-session
 Source0:    %{name}-%{version}.tar.gz
+BuildArch:  noarch
 
 %description
 Target for nemo systemd user session
