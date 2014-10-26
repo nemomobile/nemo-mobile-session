@@ -1,0 +1,13 @@
+#
+# Copyright (c) 2014, Hedayat Vatankhah <hedayat.fwd@gmail.com>.
+#
+# Sets the boot state to USER or ACT_DEAD
+# Mode is selected with %I
+
+[Unit]
+Description=Set Boot state to %I
+Before=start-user-session.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/lib/startup/set-boot-state %I

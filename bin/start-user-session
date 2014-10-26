@@ -3,7 +3,14 @@
 # Contact: Pekka Lundstrom  <pekka.lundstrom@jollamobile.com>
 #
 # Copyright (c) 2013, Jolla Ltd.
+# Copyright (c) 2014, Hedayat Vatankhah <hedayat.fwd@gmail.com>
 # All rights reserved.
+#
+# Updates:
+#    Hedayat Vatankhah <hedayat.fwd@gmail.com>:
+#      * Modified to be compatible with new systemd. It is now run as default
+#        user rather than root, and is used as the users's session manager.
+#        Session restarts are now managed by systemd itself.
 # 
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -31,57 +38,18 @@
 # This starts user session either in ACT_DEAD or USER mode
 # This also keeps eye on need for user session restart
 
-wait_old_session_to_stop() {
-    # Make sure old session is stopped first. max wait in $1
-    local i=0
-    local max_wait=$1
-    while [ $i -lt $max_wait ]; do
-        OLDS=$(systemctl is-active $USER_SERVICE)
-        if [ "$OLDS" == "inactive" -o "$OLDS" == "unknown" ]; then
-            return 0
-        fi
-        echo "($i) waiting old session $OLDS"
-        sleep 1
-        let i=$i+1
-    done
-    echo "Old session did not stop within $max_wait seconds"
-    return 1  
-}
-
-kill_old_session() {
-    echo "Killing old session"
-    systemctl --no-block stop $USER_SERVICE
-    wait_old_session_to_stop 5
-    # Kill all user session stuff
-    killall -u $DEF_UNAME
-    sleep 2
-    # Make sure X was stopped also
-    /usr/lib/startup/killx
-    sleep 2
-    OLDS=$(systemctl is-active $USER_SERVICE)
-    if [ "$OLDS" == "inactive" -o "$OLDS" == "unknown" ]; then
-        echo "Old session killed"
-        return 0
-    else 
-        echo "Failed to kill old session"
-        sleep 2
-        return 1
-    fi
-}
-
 wait_user_service_to_start() {
     # This waits untill user-session has started
     # We also check need for restart
 
+    sleep 2 # Wait a little to make sure that user@.service is started
     local ST=""
     while [ 1 ]; do
         if [ -f $RESTART_FILE ]; then
             # User session needs to be restarted
             echo "Going to restart user session $DEF_UID"
             rm -f $RESTART_FILE
-            kill_old_session
-            systemctl start --no-block $USER_SERVICE
-            sleep 1
+            return 1
         fi
         ST=$(systemctl is-active $USER_SERVICE)
         if [ "$ST" == "active" ]; then
@@ -97,35 +65,26 @@ wait_user_service_to_start() {
 }
 
 
-# ------------------ main() -----------------------
-
-[ -z "$1" ] && echo "Boot mode missing" && exit 1
-MODE=$1
 # First find out the user id we use
 DEF_UID=$(grep "^UID_MIN" /etc/login.defs |  tr -s " " | cut -d " " -f2)
 DEF_UNAME=$(getent passwd $DEF_UID | cut -d ":" -f1)
-USER_SERVICE=user-session\@${DEF_UID}.service
+USER_SERVICE=user\@${DEF_UID}.service
 
-wait_old_session_to_stop 10
-if [ $? -ne 0 ]; then
-    echo "Problem, must kill old session"
-    kill_old_session
-fi
-
-# Save the mode we are going to run
-echo "BOOTSTATE=$MODE" > /run/systemd/boot-status/bootstate
-rm -f /run/systemd/boot-status/USER
-rm -f /run/systemd/boot-status/ACT_DEAD
-touch /run/systemd/boot-status/$MODE
-
-echo "Starting new session in $MODE mode"
-systemctl start --no-block $USER_SERVICE
+echo "Starting new session"
 wait_user_service_to_start
 st=$?
 if [ $st -eq 0 ]; then
-    echo "New session $MODE started"
+    echo "New session started"
+    # We are the session manager, if we exit, the session is terminated!
+    while sleep 100000d; do
+        true
+    done
+    # loop will be terminated if 'sleep' exits abnormaly, e.g. service stopped
+    echo "User session terminated"
 else
-    echo "Starting new session in $MODE failed"
+    echo "Starting new session in failed"
 fi
+
+# Will be restarted by systemd. To shutdown, user service must be stopped using systemctl
 exit $st
 

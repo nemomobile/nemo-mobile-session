@@ -2,7 +2,7 @@
  
 [Unit]
 Description=Indicate boot is done
-After=start-user-session@USER.service
+After=start-user-session.service
 
 [Service]
 Type=oneshot
