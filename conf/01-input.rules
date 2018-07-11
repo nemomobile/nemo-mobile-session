@@ -1,0 +1,2 @@
+KERNEL=="event*", MODE="0666"
+KERNEL=="input*", MODE="0666"

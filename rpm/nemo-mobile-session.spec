@@ -28,7 +28,7 @@ Requires(post): /bin/chgrp, /usr/sbin/groupmod
 Summary:    Wayland configs for nemo-mobile-session
 Group:      Configs
 Requires:   nemo-mobile-session-common
-Conflicts:  nemo-mobile-session-xorg
+
 
 %description wayland
 %{summary}
@@ -43,6 +43,7 @@ mkdir -p %{buildroot}%{_sysconfdir}/sysconfig/
 mkdir -p %{buildroot}/var/lib/environment/nemo
 mkdir -p %{buildroot}%{_sysconfdir}/systemd/system/
 mkdir -p %{buildroot}%{_libdir}/systemd/user/pre-user-session.target.wants/
+mkdir -p %{buildroot}/lib/udev/rules.d/
 
 # Root services
 install -D -m 0644 services/user@.service.d/nemo.conf \
@@ -55,6 +56,10 @@ install -m 0644 services/init-done.service %{buildroot}/lib/systemd/system/
 install -m 0644 conf/50-nemo-mobile-ui.conf %{buildroot}/var/lib/environment/nemo/
 install -D -m 0644 conf/nemo-session-tmp.conf %{buildroot}%{_libdir}/tmpfiles.d/nemo-session-tmp.conf
 install -m 0644 conf/50-nemo-mobile-wayland.conf %{buildroot}/var/lib/environment/nemo/
+
+#udev rules
+install -m 0644 conf/01-input.rules %{buildroot}/lib/udev/rules.d/
+install -m 0644 conf/01-fbdev.rules %{buildroot}/lib/udev/rules.d/
 
 # bin
 install -D -m 0744 bin/set-boot-state %{buildroot}%{_libdir}/startup/set-boot-state
@@ -104,10 +109,13 @@ fi
 /lib/systemd/system/set-boot-state@.service
 /lib/systemd/system/start-user-session.service
 /lib/systemd/system/init-done.service
+/lib/udev/rules.d/01-input.rules
+/lib/udev/rules.d/01-fbdev.rules
 %{_libdir}/startup/start-user-session
 %{_libdir}/startup/set-boot-state
 %{_libdir}/startup/init-done
 %{_sysconfdir}/systemd/system/runlevel4.target 
+
 
 %files wayland
 %defattr(-,root,root,-)
