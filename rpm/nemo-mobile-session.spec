@@ -28,7 +28,7 @@ Requires(post): /bin/chgrp, /usr/sbin/groupmod
 Summary:    Wayland configs for nemo-mobile-session
 Group:      Configs
 Requires:   nemo-mobile-session-common
-
+Requires:   qtwayland
 
 %description wayland
 %{summary}
