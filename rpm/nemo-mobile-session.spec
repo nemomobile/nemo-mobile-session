@@ -43,6 +43,9 @@ Requires:  qtdeclarative-render2d
 
 Conflicts: nemo-mobile-session-wayland
 
+%description render2d
+%{summary}
+
 %prep
 %setup -q -n %{name}-%{version}
 
