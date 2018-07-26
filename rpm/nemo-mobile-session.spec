@@ -12,7 +12,7 @@ BuildArch:  noarch
 Target for nemo systemd user session
 
 %package common 
-Summary:    Nemo-mobile-session configs files shared by both xorg and wayland
+Summary:    Nemo-mobile-session configs files
 Group:      Configs
 Requires:   systemd >= 187
 Requires:   systemd-user-session-targets
