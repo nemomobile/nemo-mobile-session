@@ -50,7 +50,7 @@ Conflicts: nemo-mobile-session-wayland
 %setup -q -n %{name}-%{version}
 
 %install
-
+mkdir -p %{buildroot}%{_sysconfdir}/dbus-1/system.d
 mkdir -p %{buildroot}/lib/systemd/system/graphical.target.wants/
 mkdir -p %{buildroot}%{_sysconfdir}/sysconfig/
 mkdir -p %{buildroot}/var/lib/environment/nemo
@@ -74,6 +74,9 @@ install -m 0644 conf/50-nemo-mobile-render2d.conf %{buildroot}/var/lib/environme
 #udev rules
 install -m 0644 conf/01-input.rules %{buildroot}/lib/udev/rules.d/
 install -m 0644 conf/01-fbdev.rules %{buildroot}/lib/udev/rules.d/
+
+#dbus rules
+install -m 0644 conf/glacier-user.conf %{buildroot}/etc/dbus-1/system.d/
 
 # bin
 install -D -m 0744 bin/set-boot-state %{buildroot}%{_libdir}/startup/set-boot-state
@@ -128,8 +131,8 @@ fi
 %{_libdir}/startup/start-user-session
 %{_libdir}/startup/set-boot-state
 %{_libdir}/startup/init-done
-%{_sysconfdir}/systemd/system/runlevel4.target 
-
+%{_sysconfdir}/systemd/system/runlevel4.target
+%{_sysconfdir}/dbus-1/system.d/glacier-user.conf
 
 %files wayland
 %defattr(-,root,root,-)
