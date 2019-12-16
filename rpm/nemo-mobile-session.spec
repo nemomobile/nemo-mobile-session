@@ -16,9 +16,10 @@ Summary:    Nemo-mobile-session configs files
 Group:      Configs
 Requires:   systemd >= 187
 Requires:   systemd-user-session-targets
+Requires:   systemd-config-mer
 Obsoletes:  uxlaunch
 # mer release 0.20130605.1 changed login.defs
-Requires: setup >= 2.8.56-1.1.33
+Requires: setup >= 2.8.56
 Requires(post): /bin/chgrp, /usr/sbin/groupmod
 
 %description common
